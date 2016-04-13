@@ -68,16 +68,29 @@ def get_docs_in_column(board_column):
         column_info['field_name']: column_info['field_option']
         }
     docs = frappe.client.get_list(dt, filters=filters, limit_page_length=None)
-    return docs
+    return (prepare_docs_for_board(board_column, docs))
 
 
-@frappe.whitelist()
+def prepare_docs_for_board(board_column, docs):
+    pass
+
+
 def get_fields(doc):
     doc = json.loads(doc)
     meta = frappe.desk.form.meta.get_meta(doc['dt'])
-    fields = [field for field in meta.fields]
-    field_names = [name.label for name in fields if name.fieldtype == 'Select']
-    return field_names
+    return [field for field in meta.fields]
+
+
+@frappe.whitelist()
+def get_all_fields(doc):
+    fields = get_fields(doc)
+    return [name.label for name in fields]
+
+
+@frappe.whitelist()
+def get_select_fields(doc):
+    fields = get_fields(doc)
+    return [name.label for name in fields if name.fieldtype == 'Select']
 
 
 @frappe.whitelist()
