@@ -1,38 +1,31 @@
 // Copyright (c) 2016, Alec Ruiz-Ramon and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on("Board", "onload", function(doc, cdt, cdn){ //onload for testing
-	var doc = locals[cdt][cdn]
-	frappe.call({
-		method: "kanban.kanban.board_methods.get_columns",
-		args: {
-			"doc" : doc
-		},
-   	callback: function(r){
-		  console.log(r.message) // log for now, since in testing
-	  }
-  })
-});
 
-frappe.ui.form.on("Board Column", "dt", function(doc, cdt, cdn){
+frappe.ui.form.on("Board Column", "set_up_column", function(doc, cdt, cdn){
 	var doc = locals[cdt][cdn]
-	frappe.call({
-		method: "kanban.kanban.board_methods.get_select_fields",
-		args: {
-			"doc": doc
-		},
-		callback: function(r){
-			var chosen_field = frappe.prompt(
-				{label: "Field Name", fieldtype: "Select", options: r.message},
-				function(data) {
-				  console.log(data.field_name)
-			    doc.field_name = data.field_name;
-					cur_frm.refresh();
-					frappe.call({
-						method: "kanban.kanban.board_methods.get_field_options",
-						args: {
-							"doc": doc,
-							"chosen_field": doc.field_name
+	frappe.prompt(
+		{label: "Doctype for Column", fieldtype: "Link", options: "DocType"},
+		function(data) {
+			doc.dt = data.doctype_for_column;
+			cur_frm.refresh();
+			frappe.call({
+				method: "kanban.kanban.board_methods.get_select_fields",
+				args: {
+					"doc": doc
+				},
+				callback: function(r){
+					var chosen_field = frappe.prompt(
+						{label: "Field Name", fieldtype: "Select", options: r.message},
+					function(data) {
+					  console.log(data.field_name)
+				    doc.field_name = data.field_name;
+						cur_frm.refresh();
+						frappe.call({
+							method: "kanban.kanban.board_methods.get_field_options",
+							args: {
+								"doc": doc,
+								"chosen_field": doc.field_name
 						},
 						callback: function(r){
 							console.log(r.message)
@@ -43,12 +36,14 @@ frappe.ui.form.on("Board Column", "dt", function(doc, cdt, cdn){
 									console.log(data.field_option);
 									doc.field_option = data.field_option;
 									cur_frm.refresh();
-								})
+								}
+							)
 						}
-				})
-			});
-		}
-	})
+						})
+					});
+				}
+			})
+		});
 });
 
 frappe.ui.form.on("Board Column", "set_up_fields", function(doc, cdt, cdn){
