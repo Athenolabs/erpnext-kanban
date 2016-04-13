@@ -25,7 +25,7 @@ def move_card(from_column, to_column, card):
     if from_column['dt'] == to_column['dt']:
         doc = update_status(to_column['dt'], card['name'],
                             to_column['field_name'], to_column['field_option'])
-    else if from_column['dt'] != to_column['dt']:
+    elif from_column['dt'] != to_column['dt']:
         # should we have exit_status in the board_column document?
         # pros: makes this method more modular
         # cons: makes users have to do more input / thinking
@@ -76,7 +76,7 @@ def get_fields(doc):
     doc = json.loads(doc)
     meta = frappe.desk.form.meta.get_meta(doc['dt'])
     fields = [field for field in meta.fields]
-    field_names = [name.label for name in fields]
+    field_names = [name.label for name in fields if name.fieldtype == 'Select']
     return field_names
 
 
