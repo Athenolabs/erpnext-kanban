@@ -61,35 +61,74 @@ def make_new_doc(from_column, to_column, card):
     doc.save() # Need to test. Should work, save is a classmethod
 
 
+@frappe.whitelist()
 def get_docs_in_column(board_column):
+    board_column = json.loads(board_column)
     column_info = frappe.client.get("Board Column", board_column['name'])
     dt = column_info['dt']
     filters = {
         column_info['field_name']: column_info['field_option']
         }
     docs = frappe.client.get_list(dt, filters=filters, limit_page_length=None)
-    return (prepare_docs_for_board(board_column, docs))
+    full_list = []
+    for doc in docs:
+        full_list.append(frappe.client.get(column_info['dt'], doc['name']))
+    return (prepare_docs_for_board(board_column, full_list))
+
+
+def get_display_fields(board_column):
+    """ Gets dict of display_field: doc_field pairs.
+    Gets Label:fieldname pairs from document spec'd in column,
+    and 'zips' with pairs of display_field:Label from board column"""
+
+    display_fields = [
+        "title_field", "first_subtitle", "second_subtitle",
+        "field_one", "field_two", "field_three"
+        ]
+    doc_fields = { field.label:field.fieldname for field in
+                   get_fields(board_column['dt'])}
+    board_fields = { k:v for k, v in board_column.iteritems() if
+                     k in display_fields }
+    ret = {}
+    for k, v in board_fields.iteritems():
+        ret[k] = doc_fields[v]
+    return ret
 
 
 def prepare_docs_for_board(board_column, docs):
-    pass
+    data = []
+    display_fields = get_display_fields(board_column)
+
+    # need to take display_field: field_name pairs & replace field_name with
+    # the field's value in the document.
+    # then, create return packet of full doc, and displayed doc
+    for doc in docs:
+        card_fields = {}
+        for k, v in display_fields.iteritems():
+            card_fields[k] = doc[v]
+        data.append({
+            "doc": doc,
+            "card_fields": card_fields
+        })
+    return data
 
 
-def get_fields(doc):
-    doc = json.loads(doc)
-    meta = frappe.desk.form.meta.get_meta(doc['dt'])
+def get_fields(doctype):
+    meta = frappe.desk.form.meta.get_meta(doctype)
     return [field for field in meta.fields]
 
 
 @frappe.whitelist()
 def get_all_fields(doc):
-    fields = get_fields(doc)
+    doc = json.loads(doc)
+    fields = get_fields(doc['dt'])
     return [name.label for name in fields]
 
 
 @frappe.whitelist()
 def get_select_fields(doc):
-    fields = get_fields(doc)
+    doc = json.loads(doc)
+    fields = get_fields(doc['dt'])
     return [name.label for name in fields if name.fieldtype == 'Select']
 
 
