@@ -9,7 +9,7 @@ frappe.ui.form.on("Board Column", "test", function(doc, cdt, cdn){
 			"board_column": doc
 		},
 		callback: function(r){
-			console.log("callback")
+			frappe.msgprint(r.message);
 		}
 	})
 });

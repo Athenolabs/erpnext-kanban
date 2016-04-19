@@ -7,19 +7,11 @@ import frappe
 from frappe.model.document import Document
 
 class Board(Document):
-	pass
+	def get_board_data(self):
+		""" Returns a list of columns in a Board document. """
+		columns = self.get_all_children()
+		return_data = {}
+		for column in columns:
+			return_data[column.column_title] = column.get_docs_in_column()
 
-
-def get_columns(self):
-	filters = {"parent": self.name}
-	return frappe.client.get_list("Board Column", fields=fields,
-	                              filters=filters, limit_page_length=None)
-
-def get_docs_in_column(self, board_column):
-	column_info = frappe.client.get("Board Column", name=board_column)
-	dt = column_info['dt']
-	return dt
-	# status = column_info['doc_status']
-	# fields = [board_column['title_field']].append(board_column['card_fields'])
-	# filters = {"status": status}
-	# docs = frappe.client.get_list(dt, fields=fields, filters=filters)
+		return return_data

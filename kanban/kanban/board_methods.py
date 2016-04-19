@@ -5,14 +5,11 @@ from frappe.model.mapper import get_mapped_doc
 
 
 @frappe.whitelist()
-def get_columns(doc):
-    """ Returns a list of columns in a Board document. """
-    doc = json.loads(doc)
-    columns = [column for column in doc['board_column']]
-    return_data = {}
-    for column in columns:
-        return_data[column['column_title']] = get_docs_in_column(column)
-    return return_data
+def get_data(page_name):
+    page = frappe.client.get("Page", page_name)
+    doc_name = frappe.client.get_list("Board", filters={"page_name": page_name})[0]
+    doc = frappe.get_doc("Board", doc_name['name'])
+    return doc.get_board_data()
 
 
 @frappe.whitelist()
@@ -59,58 +56,6 @@ def make_new_doc(from_column, to_column, card):
                 }
     doc = get_mapped_doc(from_column['dt'], card['name'], table_map)
     doc.save() # Need to test. Should work, save is a classmethod
-
-
-@frappe.whitelist()
-def get_docs_in_column(board_column):
-    board_column = json.loads(board_column)
-    column_info = frappe.client.get("Board Column", board_column['name'])
-    dt = column_info['dt']
-    filters = {
-        column_info['field_name']: column_info['field_option']
-        }
-    docs = frappe.client.get_list(dt, filters=filters, limit_page_length=None)
-    full_list = []
-    for doc in docs:
-        full_list.append(frappe.client.get(column_info['dt'], doc['name']))
-    return (prepare_docs_for_board(board_column, full_list))
-
-
-def get_display_fields(board_column):
-    """ Gets dict of display_field: doc_field pairs.
-    Gets Label:fieldname pairs from document spec'd in column,
-    and 'zips' with pairs of display_field:Label from board column"""
-
-    display_fields = [
-        "title_field", "first_subtitle", "second_subtitle",
-        "field_one", "field_two", "field_three"
-        ]
-    doc_fields = { field.label:field.fieldname for field in
-                   get_fields(board_column['dt'])}
-    board_fields = { k:v for k, v in board_column.iteritems() if
-                     k in display_fields }
-    ret = {}
-    for k, v in board_fields.iteritems():
-        ret[k] = doc_fields[v]
-    return ret
-
-
-def prepare_docs_for_board(board_column, docs):
-    data = []
-    display_fields = get_display_fields(board_column)
-
-    # need to take display_field: field_name pairs & replace field_name with
-    # the field's value in the document.
-    # then, create return packet of full doc, and displayed doc
-    for doc in docs:
-        card_fields = {}
-        for k, v in display_fields.iteritems():
-            card_fields[k] = doc[v]
-        data.append({
-            "doc": doc,
-            "card_fields": card_fields
-        })
-    return data
 
 
 def get_fields(doctype):
