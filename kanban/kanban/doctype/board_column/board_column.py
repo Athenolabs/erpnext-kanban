@@ -28,7 +28,10 @@ class BoardColumn(Document):
 		for doc in doc_list:
 			card_fields = {}
 			for k, v in display_fields.iteritems():
-				card_fields[k] = doc[v]
+				try:
+					card_fields[k] = doc[v]
+				except:
+					pass
 			data.append({
 				"doc": doc,
 				"card_fields": card_fields
