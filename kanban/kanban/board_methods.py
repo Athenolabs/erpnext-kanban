@@ -7,7 +7,9 @@ from frappe.model.mapper import get_mapped_doc
 @frappe.whitelist()
 def get_data(page_name):
     page = frappe.client.get("Page", page_name)
-    doc_name = frappe.client.get_list("Board", filters={"page_name": page_name})[0]
+    doc_name = frappe.get_list(
+        "Board", filters={"page_name": page_name}, ignore_permissions=True
+        )[0]
     doc = frappe.get_doc("Board", doc_name['name'])
     return doc.get_board_data()
 

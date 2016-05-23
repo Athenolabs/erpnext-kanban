@@ -7,10 +7,13 @@ import frappe
 from frappe.model.document import Document
 
 class BoardColumn(Document):
-	def get_docs_in_column(self):
+	def get_docs_in_column(self, addl_filters):
 		filters = {
-	    	self.field_name: self.field_option
+	    	self.field_name: self.field_option,
         }
+		for key, value in addl_filters.iteritems():
+			filters[key] = value
+
 		docs = frappe.client.get_list(self.dt, filters=filters,
 									  limit_page_length=None)
 		full_list = []
@@ -29,7 +32,7 @@ class BoardColumn(Document):
 			card_fields = {}
 			for k, v in display_fields.iteritems():
 				try:
-					card_fields[k] = doc[v]
+					card_fields[k] = (v.replace("_", " "), doc[v])
 				except:
 					pass
 			data.append({
@@ -60,3 +63,13 @@ class BoardColumn(Document):
 	def get_associated_doc_fields(self):
 	    meta = frappe.desk.form.meta.get_meta(self.dt)
 	    return [field for field in meta.fields]
+
+	def get_communication_feed(self, doc):
+		communications = frappe.client.get_list(
+			"Communication",
+			fields=["user", "creation", "content"],
+			filters={
+				"reference_doctype": doc['doctype'],
+				"reference_name": doc['name']}
+		)
+		return communications
