@@ -19,6 +19,7 @@ this.Kanban = Class.extend({
 				"page_name": "crm-board"
 			},
 			callback: function(r){
+				console.log("loading....")
 				load_my_kanban(r.message);
 				// console.log(r.message)
 			}

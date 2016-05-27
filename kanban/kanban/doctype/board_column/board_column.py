@@ -73,3 +73,14 @@ class BoardColumn(Document):
 				"reference_name": doc['name']}
 		)
 		return communications
+
+	def get_subtitle(self):
+		if self.column_subheading != "":
+			meta = frappe.desk.form.meta.get_meta(self.dt)
+			return [field.fieldname for field in meta.fields if
+					field.label == self.column_subheading][0]
+		else:
+			return None
+
+	def get_subtitle_label(self):
+		return self.column_subheading

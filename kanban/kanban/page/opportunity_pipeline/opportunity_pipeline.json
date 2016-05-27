@@ -1,15 +1,15 @@
 {
  "content": null, 
- "creation": "2016-05-12 11:33:34.773246", 
+ "creation": "2016-05-23 08:57:32.383809", 
  "docstatus": 0, 
  "doctype": "Page", 
  "idx": 0, 
- "modified": "2016-05-23 09:03:01.922114", 
+ "modified": "2016-05-23 08:57:32.383809", 
  "modified_by": "Administrator", 
  "module": "Kanban", 
- "name": "crm-board", 
+ "name": "opportunity-pipeline", 
  "owner": "Administrator", 
- "page_name": "CRM Board", 
+ "page_name": "Opportunity Pipeline", 
  "roles": [
   {
    "role": "Sales User"
@@ -18,5 +18,5 @@
  "script": null, 
  "standard": "Yes", 
  "style": null, 
- "title": "CRM Board"
+ "title": "Opportunity Pipeline"
 }

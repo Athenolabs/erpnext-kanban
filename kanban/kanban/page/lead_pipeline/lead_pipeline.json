@@ -4,10 +4,10 @@
  "docstatus": 0, 
  "doctype": "Page", 
  "idx": 0, 
- "modified": "2016-05-23 09:03:01.922114", 
+ "modified": "2016-05-23 08:55:45.907740", 
  "modified_by": "Administrator", 
  "module": "Kanban", 
- "name": "crm-board", 
+ "name": "Lead Pipeline", 
  "owner": "Administrator", 
  "page_name": "CRM Board", 
  "roles": [
@@ -18,5 +18,5 @@
  "script": null, 
  "standard": "Yes", 
  "style": null, 
- "title": "CRM Board"
+ "title": "Lead Pipeline"
 }
