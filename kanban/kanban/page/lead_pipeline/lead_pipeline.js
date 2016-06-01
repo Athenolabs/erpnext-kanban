@@ -14,6 +14,7 @@ this.Kanban = Class.extend({
 init: function(page, wrapper) {
 	var me = this;
 	frappe.call({
+		freeze: true,
 		method: "kanban.kanban.board_methods.get_data",
 		args: {
 			"page_name": "lead-pipeline"
@@ -23,7 +24,6 @@ init: function(page, wrapper) {
 			// console.log(r.message)
 		}
 	});
-		console.log("success")
 		$(".offcanvas-container").append("<div id='canvas'></div>")
 		//$("#canvas").replaceWith(frappe.render_template("/assets/kanban/prius/index.html"));
 

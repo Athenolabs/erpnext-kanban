@@ -15,7 +15,7 @@ app_license = "MIT"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/kanban/css/kanban.css"
+app_include_css = "/assets/kanban/prius/node_modules/react-selectize/themes/index.css"
 app_include_js = "/assets/kanban/prius/dist/bundle.js"
 
 # include js, css files in header of web template
