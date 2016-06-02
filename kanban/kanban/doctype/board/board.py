@@ -50,7 +50,6 @@ class Board(Document):
             lists.append({
                 'id': idx,
                 'title': column.column_title,
-                'length': make_length(len(doclist)),
                 'description': make_description(
                     subtitle_sum, column.get_subtitle_label(), column.dt
                 )
@@ -65,13 +64,6 @@ def make_modal_form(url):
 		)
 	return template
 
-
-def make_length(length):
-	if length > 1 or length == 0:
-		ret = (str(length)) + " Entries in list"
-	else:
-		ret = (str(length)) + " Entry in list"
-	return ret
 
 def make_description(value, label, doctype):
 	if label != None:
