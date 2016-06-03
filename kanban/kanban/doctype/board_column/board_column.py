@@ -7,14 +7,14 @@ import frappe
 from frappe.model.document import Document
 
 class BoardColumn(Document):
-	def get_docs_in_column(self, addl_filters):
+	def get_docs_in_column(self):
 		filters = {
 	    	self.field_name: self.field_option,
         }
 		# add'l filters not used, can be used for server-side filtering,
 		# react filtering is better for non-sensitive data though.
-		for key, value in addl_filters.iteritems():
-			filters[key] = value
+		# for key, value in addl_filters.iteritems():
+		#	filters[key] = value
 
 		# get a list of documents (just name though) in the column.
 		# faster query would get_list with the fields we want
