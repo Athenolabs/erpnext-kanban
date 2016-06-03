@@ -11,11 +11,16 @@ class BoardColumn(Document):
 		filters = {
 	    	self.field_name: self.field_option,
         }
+		# add'l filters not used, can be used for server-side filtering,
+		# react filtering is better for non-sensitive data though.
 		for key, value in addl_filters.iteritems():
 			filters[key] = value
 
+		# get a list of documents (just name though) in the column.
+		# faster query would get_list with the fields we want
 		docs = frappe.client.get_list(self.dt, filters=filters,
 									  limit_page_length=None)
+		# query each doc in the doc list
 		full_list = []
 		for doc in docs:
 			full_list.append(frappe.client.get(self.dt, doc['name']))
@@ -23,6 +28,8 @@ class BoardColumn(Document):
 		return self.prepare_docs_for_board(full_list)
 
 	def prepare_docs_for_board(self, doc_list):
+		"""Format docs - get the six card fields spec'd in column, and then
+		dump entire doc in "doc" """
 		data = []
 		display_fields = self.get_display_fields()
 	    # need to take display_field: field_name pairs & replace field_name with

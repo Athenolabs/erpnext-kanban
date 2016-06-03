@@ -1,22 +1,25 @@
 // Copyright (c) 2016, Alec Ruiz-Ramon and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on("Board Column", "test", function(doc, cdt, cdn){
-	var doc = locals[cdt][cdn]
-	frappe.call({
-		method: "kanban.kanban.board_methods.get_docs_in_column",
-		args: {
-			"board_column": doc
-		},
-		callback: function(r){
-			frappe.msgprint(r.message);
-		}
-	})
-});
+//frappe.ui.form.on("Board Column", "test", function(doc, cdt, cdn){
+//	var doc = locals[cdt][cdn]
+//	frappe.call({
+//		method: "kanban.kanban.board_methods.get_docs_in_column",
+//		args: {
+//			"board_column": doc
+//		},
+//		callback: function(r){
+//			frappe.msgprint(r.message);
+//		}
+//	})
+//});
 
 
+// Long function here...had to nest prompts.
 frappe.ui.form.on("Board Column", "set_up_column", function(doc, cdt, cdn){
 	var doc = locals[cdt][cdn]
+	// First prompt - user selects which doctype will be referenced in col.
+	// Callback uses selected doc to get fields with type 'Select' in doc meta
 	frappe.prompt(
 		{label: "Doctype for Column", fieldtype: "Link", options: "DocType"},
 		function(data) {
@@ -27,6 +30,7 @@ frappe.ui.form.on("Board Column", "set_up_column", function(doc, cdt, cdn){
 				args: {
 					"doc": doc
 				},
+				// Callback prompts user to choose one of the fields to use for column
 				callback: function(r){
 					var chosen_field = frappe.prompt(
 						{label: "Field Name", fieldtype: "Select", options: r.message},
@@ -40,6 +44,8 @@ frappe.ui.form.on("Board Column", "set_up_column", function(doc, cdt, cdn){
 								"doc": doc,
 								"chosen_field": doc.field_name
 						},
+						// Callback prompts user to select which field option will be used
+						// in the column
 						callback: function(r){
 							console.log(r.message)
 							var chosen_option = frappe.prompt(
@@ -59,6 +65,8 @@ frappe.ui.form.on("Board Column", "set_up_column", function(doc, cdt, cdn){
 		});
 });
 
+
+// Prompt to give user fields to choose for title, card fields, etc.
 frappe.ui.form.on("Board Column", "set_up_fields", function(doc, cdt, cdn){
 	var doc = locals[cdt][cdn]
 	frappe.call({

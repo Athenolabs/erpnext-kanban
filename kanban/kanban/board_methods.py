@@ -3,7 +3,7 @@ import json
 
 from frappe.model.mapper import get_mapped_doc
 
-
+# use this to get data on a board. returns react-friendly dataset
 @frappe.whitelist()
 def get_data(page_name):
     page = frappe.client.get("Page", page_name)
