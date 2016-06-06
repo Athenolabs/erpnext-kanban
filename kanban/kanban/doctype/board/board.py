@@ -17,8 +17,12 @@ class Board(Document):
         #     les, use a list comprehension to filter into columns and filters
         children = self.get_all_children()
         columns = [entry for entry in children if entry.doctype == "Board Column"]
-        filters = [entry for entry in children if entry.doctype == "Board Filter"]
-
+        filters = [{'id': entry.field_name,
+                    'title': entry.filter_title,
+                    'type': entry.filter_type,
+                    'options': [],
+                    'values': []
+                    } for entry in children if entry.doctype == "Board Filter"]
         lists = []
         cards = []
 
@@ -32,12 +36,7 @@ class Board(Document):
         # whether or not to compute a sum for this field that ends up at the
         # top of the column
         for idx, column in enumerate(columns):
-            if column.get_subtitle_label() != None:
-                subtitle = column.get_subtitle()
-            else:
-                subtitle = None
             doclist = column.get_docs_in_column()
-            subtitle_sum = 0
             for doc in doclist:
                 url = "desk#Form/" + doc['doc']['doctype'] + '/' + doc['doc']['name']
                 cards.append({
@@ -57,19 +56,17 @@ class Board(Document):
                     'communications': column.get_communication_feed(doc['doc']),
                     'url': url,
                 })
-                if subtitle != None:
-                    subtitle_sum += int(doc['doc'][subtitle])
             lists.append({
                 'id': idx,
                 'title': column.column_title,
-                'description': make_description(
-                    subtitle_sum, column.get_subtitle_label(), column.dt
-                ),
-                'filters': {}
+                'description': column.get_subtitle()
             })
-        return { 'lists': lists, 'cards': cards }
-        # when filters are complete:
-        # return { 'lists': lists, 'cards': cards, 'filters': filters }
+        for my_filter in filters:
+            for card in cards:
+                option = str(card['doc'][my_filter['id']])
+                if option not in my_filter['options']:
+                    my_filter['options'].append(option)
+        return { 'lists': lists, 'cards': cards, 'filters': filters }
 
 
 def make_modal_form(url):
