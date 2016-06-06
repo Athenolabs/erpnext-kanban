@@ -14,7 +14,7 @@ class Board(Document):
     def get_board_data(self):
         """ Returns a list of columns and cards in a Board document. """
         # get children (built-in from Document). since there are two child
-        # tables, use a list comprehension to filter into columns and filters
+        #     les, use a list comprehension to filter into columns and filters
         children = self.get_all_children()
         columns = [entry for entry in children if entry.doctype == "Board Column"]
         filters = [entry for entry in children if entry.doctype == "Board Filter"]
@@ -74,7 +74,7 @@ class Board(Document):
 
 def make_modal_form(url):
     """If we want to render the doc's view for the modal on the server side"""
-    # make our own template - scripting doesn't work, so no buttons.
+	# make our own template - scripting doesn't work, so no buttons.
     template = frappe.render_template(
         'kanban/templates/doc_modal.html', {'url': url}
         )
@@ -86,7 +86,7 @@ def make_description(value, label, doctype):
     if label != None:
         field = get_field_meta(label.title(), doctype)
         ret = {'label': label.title(),
-            'value': str(frappe.format_value(value, field))}
+               'value': str(frappe.format_value(value, field))}
     else:
         ret = {'label': '', 'value': ''}
     return ret

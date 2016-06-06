@@ -103,3 +103,35 @@ frappe.ui.form.on("Board Column", "set_up_fields", function(doc, cdt, cdn){
 		}
 	})
 });
+
+frappe.ui.form.on("Board Filter", "set_up_filter", function(doc, cdt, cdn){
+	var doc = locals[cdt][cdn]
+	doc.dt = "Lead"
+
+	frappe.call({
+		method: "kanban.kanban.board_methods.get_select_fields",
+		args: {
+			"doc": doc
+		},
+		callback: function(r){
+			var chosen_field = frappe.prompt(
+				{label: "Filter Name", fieldtype: "Select", options: r.message},
+				function(data) {
+					cur_frm.refresh();
+			    doc.filter_name = data.filter_name;
+					cur_frm.refresh();
+					var chosen_option = frappe.prompt(
+						{label: "Filter Type", fieldtype: "Select",
+						options: ["Select", "Multiselect", "Date"]},
+						function(data) {
+							doc.filter_type = data.filter_type;
+							if(doc.filter_type == "Date") {
+								console.log("DATE")
+							}
+							cur_frm.refresh();
+						}
+					)
+			})
+		}
+	})
+});
