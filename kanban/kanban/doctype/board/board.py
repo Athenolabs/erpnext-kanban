@@ -37,35 +37,49 @@ class Board(Document):
         # top of the column
         for idx, column in enumerate(columns):
             doclist = column.get_docs_in_column()
-            for doc in doclist:
-                url = "desk#Form/" + doc['doc']['doctype'] + '/' + doc['doc']['name']
-                cards.append({
-                    'parentList': idx,
-                    'doc': doc['doc'],
-                    'title': doc['card_fields']['title_field'][1],
-                    'descr_1': make_description(
-                        doc['card_fields']['first_subtitle'][1],
-                        doc['card_fields']['first_subtitle'][0],
-                        doc['doc']['doctype']
-                    ),
-                    'descr_2': make_description(
-                        doc['card_fields']['second_subtitle'][1],
-                        doc['card_fields']['second_subtitle'][0],
-                        doc['doc']['doctype']
-                    ),
-                    'communications': column.get_communication_feed(doc['doc']),
-                    'url': url,
-                })
+            display = column.get_display_fields()
             lists.append({
                 'id': idx,
                 'title': column.column_title,
-                'description': column.get_subtitle()
+                'description': column.get_subtitle(),
             })
+            for doc in doclist:
+                cards.append({
+                    'parentList': idx,
+                    'doc': doc,
+                    # +8 seconds here
+                    'display': {
+                        'titleFieldLabel': display['title_field']['label'],
+                        'titleField': doc[display['title_field']['fieldname']],
+                        'titleFieldType': display['title_field']['fieldtype'],
+                        'subOneLabel': display['first_subtitle']['label'],
+                        'subOne': doc[display['first_subtitle']['fieldname']],
+                        'subOneType': display['first_subtitle']['fieldtype'],
+                        'subTwoLabel': display['second_subtitle']['label'],
+                        'subTwo': doc[display['second_subtitle']['fieldname']],
+                        'subTwoType': display['second_subtitle']['fieldtype'],
+                        'fieldOneLabel': display['field_one']['label'],
+                        'fieldOne': doc[display['field_one']['fieldname']],
+                        'fieldOneType': display['field_one']['fieldtype'],
+                        'fieldTwoLabel': display['field_two']['label'],
+                        'fieldTwo': doc[display['field_two']['fieldname']],
+                        'fieldTwoType': display['field_two']['fieldtype'],
+                        'fieldThreeLabel': display['field_three']['label'],
+                        'fieldThree': doc[display['field_three']['fieldname']],
+                        'fieldThreeType': display['field_three']['fieldtype']
+                    },
+                    'url': "desk#Form/" + column.dt + '/' + doc['name'],
+                })
+            print(idx)
+        # same speed here vs in columns loop
         for my_filter in filters:
             for card in cards:
-                option = str(card['doc'][my_filter['id']])
-                if option not in my_filter['options']:
-                    my_filter['options'].append(option)
+                try:
+                    option = str(card['doc'][my_filter['id']])
+                    if option not in my_filter['options']:
+                        my_filter['options'].append(option)
+                except KeyError:
+                    pass
         return { 'lists': lists, 'cards': cards, 'filters': filters }
 
 

@@ -12,9 +12,9 @@ frappe.pages['opportunity-pipeline'].on_page_load = function(wrapper) {
 this.Kanban = Class.extend({
 	init: function(page, wrapper) {
 		var me = this;
-		console.log("loading...")
 		frappe.call({
 			method: "kanban.kanban.board_methods.get_data",
+			freeze: true,
 			args: {
 				"page_name": "opportunity-pipeline"
 			},
