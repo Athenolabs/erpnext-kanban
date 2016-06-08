@@ -105,7 +105,7 @@ class BoardColumn(Document):
 	def get_communication_feed(self, doctype, docname):
 		communications = frappe.client.get_list(
 			"Communication",
-			fields=["user", "creation", "content"],
+			fields=["user", "creation", "content", "subject", "communication_date", "communication_type"],
 			filters={
 				"reference_doctype": doctype,
 				"reference_name": docname}
