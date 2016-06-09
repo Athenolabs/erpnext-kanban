@@ -66,7 +66,10 @@ class Board(Document):
                         'fieldTwoType': display['field_two']['fieldtype'],
                         'fieldThreeLabel': display['field_three']['label'],
                         'fieldThree': doc[display['field_three']['fieldname']],
-                        'fieldThreeType': display['field_three']['fieldtype']
+                        'fieldThreeType': display['field_three']['fieldtype'],
+                        'fieldFourLabel': display['field_four']['label'],
+                        'fieldFour': doc[display['field_four']['fieldname']],
+                        'fieldFourType': display['field_four']['fieldtype']
                     },
                     'url': "desk#Form/" + column.dt + '/' + doc['name'],
                 })

@@ -17,7 +17,7 @@ class BoardColumn(Document):
 		#	filters[key] = value
 
 		# get a list of documents (just name though) in the column.
-		# faster query would get_list with the fields we want
+		# why is get_meta and get_list slower? (10%ish)
 		#meta = frappe.desk.form.meta.get_meta(self.dt)
 		#fields = [field.fieldname for field in meta.fields if field.fieldtype
 		#		  not in ['Column Break', 'Section Break', 'HTML', 'Table', 'Button']
@@ -36,7 +36,7 @@ class BoardColumn(Document):
 
 	### DEPRECATED
 	def prepare_docs_for_board(self, doc_list):
-		"""Format docs - get the six card fields spec'd in column, and then
+		"""Format docs - get the card fields spec'd in column, and then
 		dump entire doc in "doc" """
 		data = []
 		display_fields = self.get_display_fields()
@@ -59,7 +59,7 @@ class BoardColumn(Document):
 	def get_display_fields(self):
 		display_fields = [
 	        "title_field", "first_subtitle", "second_subtitle",
-	        "field_one", "field_two", "field_three"
+	        "field_one", "field_two", "field_three", "field_four"
 	    ]
 		doc_fields = self.get_associated_doc_fields()
 		column_fields = frappe.client.get(self)
