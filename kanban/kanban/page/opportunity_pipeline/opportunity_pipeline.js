@@ -14,15 +14,13 @@ this.Kanban = Class.extend({
 		var me = this;
 		frappe.call({
 			method: "kanban.kanban.board_methods.get_data",
-			freeze: true,
 			args: {
 				"page_name": "opportunity-pipeline"
 			},
 			callback: function(r){
-				load_my_kanban(r.message);
+				loadKanban(r.message);
 			}
 		});
 		$(".offcanvas-container").append("<div id='canvas'></div>")
-		//$("#canvas").replaceWith(frappe.render_template("/assets/kanban/prius/index.html"));
 	},
 });

@@ -1,6 +1,7 @@
 import frappe
 import json
 
+from frappe.async import emit_via_redis
 from frappe.model.mapper import get_mapped_doc
 
 # use this to get data on a board. returns react-friendly dataset
@@ -12,6 +13,32 @@ def get_data(page_name):
         )[0]
     doc = frappe.get_doc("Board", doc_name['name'])
     return doc.get_board_data()
+
+
+def console_post(update):
+    message = "console.log(" + json.dumps(update) + ")"
+    frappe.emit_js(message)
+
+
+def update_card(doc, method):
+    columns = frappe.client.get_list(
+        "Board Column",
+        filters={"dt": doc.doctype},
+        fields=['name', 'parent']
+        )
+    if (len(columns) > 0):
+        find_board(doc, columns)
+
+
+def find_board(doc, columns):
+    parents = []
+    for column in columns:
+        if column['parent'] not in parents:
+            parents.append(column['parent'])
+    for parent in parents:
+        board = frappe.get_doc("Board", parent)
+        board.update_card(doc.as_dict())
+
 
 
 @frappe.whitelist()

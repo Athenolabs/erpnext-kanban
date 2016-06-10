@@ -33,6 +33,10 @@ class BoardColumn(Document):
 			full_list.append(doc_dict)
 		return full_list
 
+	def get_column_filter(self):
+		meta = frappe.desk.form.meta.get_meta(self.dt)
+		field = [field for field in meta.fields if field.label == self.field_name][0]
+		return {'fieldname': field.fieldname, 'option': self.field_option}
 
 	### DEPRECATED
 	def prepare_docs_for_board(self, doc_list):
