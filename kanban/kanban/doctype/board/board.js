@@ -125,9 +125,6 @@ frappe.ui.form.on("Board Filter", "set_up_filter", function(doc, cdt, cdn){
 						options: ["Select", "Multiselect", "Date"]},
 						function(data) {
 							doc.filter_type = data.filter_type;
-							if(doc.filter_type == "Date") {
-								console.log("DATE")
-							}
 							cur_frm.refresh();
 						}
 					)
