@@ -14,6 +14,7 @@ this.Kanban = Class.extend({
 		var me = this;
 		frappe.call({
 			method: "kanban.kanban.board_methods.get_data",
+			freeze: true,
 			args: {
 				"page_name": "opportunity-pipeline"
 			},

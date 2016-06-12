@@ -102,9 +102,7 @@ class Board(Document):
                         doc.doctype, doc.name
                         )
                 card['doc'] = date_hook(card['doc'])
-                command = "updateCard(" + json.dumps(card) + ")"
-                frappe.emit_js(command)
-                return card
+                return (emit_card(card))
         else:
             card = {
                 'key': doc['name'],
@@ -112,8 +110,14 @@ class Board(Document):
                 'url': "desk#Form/" + doc['doctype'] + '/' + doc['name'],
                 'delete': True
             }
-            command = "updateCard(" + json.dumps(card) + ")"
-            frappe.emit_js(command)
+            emit_card(card)
+
+
+def emit_card(card):
+    command = "updateCard("
+    command += json.dumps(card)
+    command += ")"
+    frappe.emit_js(command)
 
 
 def fix_list(datetimes_in_list):
