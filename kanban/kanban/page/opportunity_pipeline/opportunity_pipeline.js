@@ -22,6 +22,5 @@ this.Kanban = Class.extend({
 				loadKanban(r.message);
 			}
 		});
-		$(".offcanvas-container").append("<div id='canvas'></div>")
 	},
 });
