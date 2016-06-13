@@ -108,6 +108,7 @@ frappe.ui.form.on("Board Filter", "set_up_filter", function(doc, cdt, cdn){
 	var doc = locals[cdt][cdn]
 	doc.dt = "Lead"
 
+// get all fields, not just select
 	frappe.call({
 		method: "kanban.kanban.board_methods.get_select_fields",
 		args: {

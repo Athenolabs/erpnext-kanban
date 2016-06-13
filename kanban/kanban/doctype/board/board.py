@@ -96,6 +96,7 @@ class Board(Document):
         for column in columns:
             col_filter = column.get_column_filter()
             if doc[col_filter['fieldname']] == col_filter['option']:
+                # making a list so that I can re-use make_card
                 list_info = self.make_list(column)
                 card = self.make_card(list_info, doc)
                 card['doc']['communications'] = column.get_communication_feed(

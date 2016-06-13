@@ -16,16 +16,9 @@ class BoardColumn(Document):
 		# for key, value in addl_filters.iteritems():
 		#	filters[key] = value
 
-		# get a list of documents (just name though) in the column.
-		# why is get_meta and get_list slower? (10%ish)
-		#meta = frappe.desk.form.meta.get_meta(self.dt)
-		#fields = [field.fieldname for field in meta.fields if field.fieldtype
-		#		  not in ['Column Break', 'Section Break', 'HTML', 'Table', 'Button']
-		#		  and field.fieldname != 'shipping_rule']
-		#fields.append('name')
-		#fields.append('owner')
-		docs = frappe.get_list(self.dt, filters=filters, #fields=fields,
-									  limit_page_length=None)
+		# doing one large query is slower for w/e reason. probably has to do
+		# with the list / dict comps
+		docs = frappe.get_list(self.dt, filters=filters, limit_page_length=None)
 		full_list = []
 		for doc in docs:
 			doc_dict = frappe.client.get(self.dt, doc['name'])
@@ -37,6 +30,7 @@ class BoardColumn(Document):
 		meta = frappe.desk.form.meta.get_meta(self.dt)
 		field = [field for field in meta.fields if field.label == self.field_name][0]
 		return {'fieldname': field.fieldname, 'option': self.field_option}
+
 
 	### DEPRECATED
 	def prepare_docs_for_board(self, doc_list):

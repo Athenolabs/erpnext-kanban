@@ -20,6 +20,7 @@ def console_post(update):
     frappe.emit_js(message)
 
 
+# TODO : find if there is an instance of the board before trying to update card
 def update_card(doc, method):
     columns = frappe.client.get_list(
         "Board Column",
@@ -41,6 +42,7 @@ def find_board(doc, columns):
 
 
 
+# unused
 @frappe.whitelist()
 def move_card(from_column, to_column, card):
     """ Moves a card from one column to another. Two cases:
