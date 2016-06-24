@@ -11,24 +11,32 @@ import json
 
 
 class Board(Document):
-    def get_board_data(self):
-        """ Returns a list of columns and cards in a Board document. """
-        # get children (built-in from Document). since there are two child
-        #     les, use a list comprehension to filter into columns and filters
+    def get_board_columns(self):
         children = self.get_all_children()
-        columns = [entry for entry in children if entry.doctype == "Board Column"]
+        columns = [self.make_list(entry) for entry in children if
+                   entry.doctype == "Board Column"]
+        return sorted(columns, key=lambda column: column['idx'])
+
+    def get_board_filters(self):
+        children = self.get_all_children()
         filters = [{'id': entry.field_name,
                     'title': entry.filter_title,
                     'type': entry.filter_type,
                     'options': [],
                     'values': []
                     } for entry in children if entry.doctype == "Board Filter"]
+        return filters
+
+    def get_board_data(self):
+        """ Returns a list of columns and cards in a Board document. """
+        # get children (built-in from Document). since there are two child
+        #     les, use a list comprehension to filter into columns and filters
+        columns = [entry for entry in self.get_all_children() if
+                   entry.doctype == "Board Column"]
+        filters = self.get_board_filters()
         lists = []
         cards = []
-        # outermost iteration covers creation of lists. essentially converting
-        # the Board Column doctype into a React-friendly data format.
-        # inner iteration (doc in doclist) creates a React-friendly data format
-        # for each card
+
         for idx, column in enumerate(columns):
             doclist = column.get_docs_in_column()
             lists.append(self.make_list(column))
@@ -44,11 +52,12 @@ class Board(Document):
                         my_filter['options'].append(option)
                 except KeyError:
                     pass
-        return { 'lists': lists, 'cards': cards, 'filters': filters }
+        return { 'cards': cards, 'filters': filters, 'lists': lists }
 
     def make_list(self, column):
         return {
-            'id': column.idx,
+            'id': column.name,
+            'idx': column.idx,
             'dt': column.dt,
             'title': column.column_title,
             'description': column.get_subtitle(),
@@ -59,8 +68,8 @@ class Board(Document):
         display = column_info['display']
         return {
             'key': doc['name'],
-            'parentList': column_info['id'],
             'doc': doc,
+            'parentList': column_info['id'],
             # +8 seconds here
             'display': {
                 'titleFieldLabel': display['title_field']['label'],
@@ -121,10 +130,6 @@ def emit_card(card):
     frappe.emit_js(command)
 
 
-def fix_list(datetimes_in_list):
-    return [date_hook(entry) for entry in datetimes_in_list]
-
-
 def date_hook(dictionary):
     for key, value in dictionary.iteritems():
         if str(type(value)) == "<type 'datetime.datetime'>":
@@ -132,7 +137,7 @@ def date_hook(dictionary):
         elif str(type(value)) == "<type 'datetime.date'>":
             dictionary[key] = datetime.datetime.strftime(value, "%m-%d-%Y")
         elif str(type(value)) == "<type 'list'>":
-            dictionary[key] = fix_list(value)
+            dictionary[key] = [date_hook(entry) for entry in value]
         elif type(value) == "<type 'dict'>":
             dictionary[key] = date_hook(value)
     return dictionary
@@ -141,25 +146,6 @@ def date_hook(dictionary):
 def console_log(message):
     message = "console.log(" + json.dumps(message) + ")"
     frappe.emit_js(message)
-
-def make_modal_form(url):
-    """If we want to render the doc's view for the modal on the server side"""
-	# make our own template - scripting doesn't work, so no buttons.
-    template = frappe.render_template(
-        'kanban/templates/doc_modal.html', {'url': url}
-        )
-    return template
-
-
-def make_description(value, label, doctype):
-    """Format a description field into a label-value pair for rendering"""
-    if label != None:
-        field = get_field_meta(label.title(), doctype)
-        ret = {'label': label.title(),
-               'value': str(frappe.format_value(value, field))}
-    else:
-        ret = {'label': '', 'value': ''}
-    return ret
 
 
 def get_field_meta(label, doctype):

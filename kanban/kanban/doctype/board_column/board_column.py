@@ -16,14 +16,20 @@ class BoardColumn(Document):
 		# for key, value in addl_filters.iteritems():
 		#	filters[key] = value
 
-		# doing one large query is slower for w/e reason. probably has to do
-		# with the list / dict comps
-		docs = frappe.get_list(self.dt, filters=filters, limit_page_length=None)
+		# TODO find way (if possible) to also get comms in query
+		docs = frappe.db.sql(
+			"""
+				SELECT *
+				FROM `tab{0}`
+				WHERE `{1}` = "{2}"
+			""".format(self.dt, self.field_name.lower(), self.field_option),
+			as_dict=True)
+
 		full_list = []
 		for doc in docs:
-			doc_dict = frappe.client.get(self.dt, doc['name'])
-			doc_dict['communications'] = self.get_communication_feed(self.dt, doc['name'])
-			full_list.append(doc_dict)
+			doc['communications'] = self.get_communication_feed(self.dt, doc['name'])
+			doc['doctype'] = self.dt
+			full_list.append(doc)
 		return full_list
 
 	def get_column_filter(self):
