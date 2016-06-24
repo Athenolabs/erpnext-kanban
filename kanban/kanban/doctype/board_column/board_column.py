@@ -19,7 +19,7 @@ class BoardColumn(Document):
 		# TODO find way (if possible) to also get comms in query
 		docs = frappe.db.sql(
 			"""
-				SELECT *
+				SELECT *, "{0}" as "doctype"
 				FROM `tab{0}`
 				WHERE `{1}` = "{2}"
 			""".format(self.dt, self.field_name.lower(), self.field_option),
@@ -28,7 +28,6 @@ class BoardColumn(Document):
 		full_list = []
 		for doc in docs:
 			doc['communications'] = self.get_communication_feed(self.dt, doc['name'])
-			doc['doctype'] = self.dt
 			full_list.append(doc)
 		return full_list
 
