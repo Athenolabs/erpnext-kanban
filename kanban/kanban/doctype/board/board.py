@@ -124,6 +124,7 @@ class Board(Document):
 
 
 def emit_card(card):
+    """Prototype to emit js to window to update card. better in websocket."""
     command = "updateCard("
     command += json.dumps(card)
     command += ")"
@@ -143,19 +144,13 @@ def date_hook(dictionary):
     return dictionary
 
 
-def console_log(message):
-    message = "console.log(" + json.dumps(message) + ")"
-    frappe.emit_js(message)
-
-
 def get_field_meta(label, doctype):
     """Get meta-info of a field.
     Helpful to convert/compare field label (i.e. Person Name) to fieldname
     (person_name), get field type (date, data, select), and so on"""
     meta = frappe.desk.form.meta.get_meta(doctype)
     try:
-        field = [field for field in meta.fields if
-			     field.label == label][0]
+        field = [field for field in meta.fields if field.label == label][0]
     except:
         field = None
     return field
