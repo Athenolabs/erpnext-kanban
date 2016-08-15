@@ -4,10 +4,10 @@ import json
 from frappe.async import emit_via_redis
 from frappe.model.mapper import get_mapped_doc
 
+
 # use this to get data on a board. returns react-friendly dataset
 @frappe.whitelist()
 def get_data(page_name):
-    page = frappe.client.get("Page", page_name)
     doc_name = frappe.get_list(
         "Board", filters={"page_name": page_name}, ignore_permissions=True
         )[0]
@@ -15,34 +15,18 @@ def get_data(page_name):
     return doc.get_board_data()
 
 
-def console_post(update):
-    message = "console.log(" + json.dumps(update) + ")"
-    frappe.emit_js(message)
+# TODO: connect to websocket / webhook and update board
+#
+# def find_board(doc, columns):
+#     parents = []
+#     for column in columns:
+#         if column['parent'] not in parents:
+#             parents.append(column['parent'])
+#     for parent in parents:
+#         board = frappe.get_doc("Board", parent)
+#         board.update_card(doc.as_dict())
 
-
-# TODO : find if there is an instance of the board before trying to update card
-def update_card(doc, method):
-    columns = frappe.client.get_list(
-        "Board Column",
-        filters={"dt": doc.doctype},
-        fields=['name', 'parent']
-        )
-    if (len(columns) > 0):
-        find_board(doc, columns)
-
-
-def find_board(doc, columns):
-    parents = []
-    for column in columns:
-        if column['parent'] not in parents:
-            parents.append(column['parent'])
-    for parent in parents:
-        board = frappe.get_doc("Board", parent)
-        board.update_card(doc.as_dict())
-
-
-
-# unused
+# unused/proto
 @frappe.whitelist()
 def move_card(from_column, to_column, card):
     """ Moves a card from one column to another. Two cases:
@@ -69,24 +53,6 @@ def move_card(from_column, to_column, card):
     # such as status updated on/by, oppt. date pushed back, etc.
 
     # this could also be done in the framework rather than the board...
-
-
-def update_status(doctype, doc, status_field, new_status):
-    """ Sets the status of a document """
-    frappe.client.set_value(doctype, doc, status_field, new_status)
-
-
-def make_new_doc(from_column, to_column, card):
-    table_map = {from_column['dt']:
-                    {   "doctype": to_column['dt'],
-# Is the field map needed? Will test.
-#                        "field_map": {
-#                            "lead_name": "prospect_name",
-#                        }
-                    }
-                }
-    doc = get_mapped_doc(from_column['dt'], card['name'], table_map)
-    doc.save() # Need to test. Should work, save is a classmethod
 
 
 def get_fields(doctype):

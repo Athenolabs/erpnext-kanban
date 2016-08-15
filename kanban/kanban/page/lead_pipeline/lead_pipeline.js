@@ -26,6 +26,5 @@ init: function(page, wrapper) {
 	});
 		$(".offcanvas-container").append("<div id='canvas'></div>")
 		//$("#canvas").replaceWith(frappe.render_template("/assets/kanban/prius/index.html"));
-
 	},
 });

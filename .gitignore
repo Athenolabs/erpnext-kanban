@@ -3,4 +3,9 @@
 *.egg-info
 *.swp
 tags
+<<<<<<< HEAD
 kanban/docs/current
+=======
+kanban/docs/current
+node_modules
+>>>>>>> 1b376e555a036bed9e069f5fef531316a01b4161
